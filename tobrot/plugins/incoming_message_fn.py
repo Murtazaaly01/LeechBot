@@ -75,18 +75,18 @@ async def leech_commandi_f(client, message):
         # start the aria2c daemon
         aria_i_p = await aria_start()
         LOGGER.info(aria_i_p)
+        current_user_id = message.reply_to_message.from_user.id
+        # create an unique directory
+        new_download_location = os.path.join(
+            DOWNLOAD_LOCATION,
+            str(current_user_id),
+            str(time.time())
+        )
+        # create download directory, if not exist
+        if not os.path.isdir(new_download_location):
+            os.makedirs(new_download_location)
+        await m_.edit_text("trying to download")
         if "_" in m_sgra:
-            current_user_id = message.reply_to_message.from_user.id
-            # create an unique directory
-            new_download_location = os.path.join(
-                DOWNLOAD_LOCATION,
-                str(current_user_id),
-                str(time.time())
-            )
-            # create download directory, if not exist
-            if not os.path.isdir(new_download_location):
-                os.makedirs(new_download_location)
-            await m_.edit_text("trying to download")
             # try to download the "link"
             sagtus, err_message = await fake_etairporpa_call(
                 aria_i_p,
@@ -97,24 +97,8 @@ async def leech_commandi_f(client, message):
                 # maybe IndexError / ValueError might occur,
                 # we don't know, yet!!
             )
-            if not sagtus:
-                # if FAILED, display the error message
-                await m_.edit_text(err_message)
         else:
-            is_zip = False
-            if "a" in m_sgra:
-                is_zip = True
-            current_user_id = message.reply_to_message.from_user.id
-            # create an unique directory
-            new_download_location = os.path.join(
-                DOWNLOAD_LOCATION,
-                str(current_user_id),
-                str(time.time())
-            )
-            # create download directory, if not exist
-            if not os.path.isdir(new_download_location):
-                os.makedirs(new_download_location)
-            await m_.edit_text("trying to download")
+            is_zip = "a" in m_sgra
             # try to download the "link"
             sagtus, err_message = await call_apropriate_function(
                 aria_i_p,
@@ -123,9 +107,9 @@ async def leech_commandi_f(client, message):
                 m_,
                 is_zip
             )
-            if not sagtus:
-                # if FAILED, display the error message
-                await m_.edit_text(err_message)
+        if not sagtus:
+            # if FAILED, display the error message
+            await m_.edit_text(err_message)
 
 
 async def incoming_youtube_dl_f(client, message):

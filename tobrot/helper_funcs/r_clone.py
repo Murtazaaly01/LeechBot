@@ -45,9 +45,10 @@ async def copy_via_rclone(
         "rclone",
         "copy",
         src,
-        "" + remote_name + ":" + remote_dir + "",
-        "--config=" + conf_file + ""
+        f"{remote_name}:{remote_dir}",
+        f"--config={conf_file}",
     ]
+
     LOGGER.info(command_to_exec)
     process = await asyncio.create_subprocess_exec(
         *command_to_exec,
@@ -90,11 +91,11 @@ def extract_c_m_ids(message_link: str) -> (Union[str, int], int):
         # private link
         if p_m_link[3] == "c":
             # the Telegram private link
-            chat_id, message_id = int("-100" + p_m_link[4]), int(p_m_link[5])
+            chat_id, message_id = int(f"-100{p_m_link[4]}"), int(p_m_link[5])
         elif p_m_link[3] == "PublicLeech":
             # bleck magick
             chat_id, message_id = int(p_m_link[4]), int(p_m_link[5])
     elif len(p_m_link) == 5:
         # public link
-        chat_id, message_id = str("@" + p_m_link[3]), int(p_m_link[4])
+        chat_id, message_id = str(f"@{p_m_link[3]}"), int(p_m_link[4])
     return chat_id, message_id
